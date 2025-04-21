@@ -1,0 +1,231 @@
+---
+Organizations:
+
+  - &OrdererOrg
+    Name: OrdererOrg
+    ID: OrdererMSP
+    MSPDir: ../organizations/ordererOrganizations/orderer.medtrack.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('OrdererMSP.admin')"
+
+  - &Retailer
+    Name: RetailerMSP
+    ID: RetailerMSP
+    MSPDir: ../organizations/peerOrganizations/retailer.medtrack.com/msp
+    AnchorPeers:
+      - Host: peer0.retailer.medtrack.com
+        Port: 7051
+    Policies: &OrgPolicies
+      Readers:
+        Type: Signature
+        Rule: "OR('RetailerMSP.admin', 'RetailerMSP.peer', 'RetailerMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('RetailerMSP.admin', 'RetailerMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('RetailerMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('RetailerMSP.peer')"
+
+  - &Manufacturer
+    Name: ManufacturerMSP
+    ID: ManufacturerMSP
+    MSPDir: ../organizations/peerOrganizations/manufacturer.medtrack.com/msp
+    AnchorPeers:
+      - Host: peer0.manufacturer.medtrack.com
+        Port: 8051
+    Policies: *OrgPolicies
+
+  - &Distributor
+    Name: DistributorMSP
+    ID: DistributorMSP
+    MSPDir: ../organizations/peerOrganizations/distributor.medtrack.com/msp
+    AnchorPeers:
+      - Host: peer0.distributor.medtrack.com
+        Port: 9051
+    Policies: *OrgPolicies
+
+  - &Wholesaler
+    Name: WholesalerMSP
+    ID: WholesalerMSP
+    MSPDir: ../organizations/peerOrganizations/wholesaler.medtrack.com/msp
+    AnchorPeers:
+      - Host: peer0.wholesaler.medtrack.com
+        Port: 10051
+    Policies: *OrgPolicies
+
+  - &Supplier
+    Name: SupplierMSP
+    ID: SupplierMSP
+    MSPDir: ../organizations/peerOrganizations/supplier.medtrack.com/msp
+    AnchorPeers:
+      - Host: peer0.supplier.medtrack.com
+        Port: 11051
+    Policies: *OrgPolicies
+
+  - &Consumer
+    Name: ConsumerMSP
+    ID: ConsumerMSP
+    MSPDir: ../organizations/peerOrganizations/consumer.medtrack.com/msp
+    AnchorPeers:
+      - Host: peer0.consumer.medtrack.com
+        Port: 12051
+    Policies: *OrgPolicies
+
+Capabilities:
+  Channel: &ChannelCapabilities
+    V2_0: true
+  Orderer: &OrdererCapabilities
+    V2_0: true
+  Application: &ApplicationCapabilities
+    V2_0: true
+
+Application: &ApplicationDefaults
+  Organizations:
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    Endorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+    LifecycleEndorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+  Capabilities:
+    <<: *ApplicationCapabilities
+
+Orderer: &OrdererDefaults
+  OrdererType: etcdraft
+  Addresses:
+    - orderer1.orderer.medtrack.com:7050
+    - orderer2.orderer.medtrack.com:8050
+    - orderer3.orderer.medtrack.com:9050
+  EtcdRaft:
+    Consenters:
+      - Host: orderer1.orderer.medtrack.com
+        Port: 7050
+        ClientTLSCert: ../organizations/ordererOrganizations/orderer.medtrack.com/orderers/orderer1.orderer.medtrack.com/tls/server.crt
+        ServerTLSCert: ../organizations/ordererOrganizations/orderer.medtrack.com/orderers/orderer1.orderer.medtrack.com/tls/server.crt
+      - Host: orderer2.orderer.medtrack.com
+        Port: 8050
+        ClientTLSCert: ../organizations/ordererOrganizations/orderer.medtrack.com/orderers/orderer2.orderer.medtrack.com/tls/server.crt
+        ServerTLSCert: ../organizations/ordererOrganizations/orderer.medtrack.com/orderers/orderer2.orderer.medtrack.com/tls/server.crt
+      - Host: orderer3.orderer.medtrack.com
+        Port: 9050
+        ClientTLSCert: ../organizations/ordererOrganizations/orderer.medtrack.com/orderers/orderer3.orderer.medtrack.com/tls/server.crt
+        ServerTLSCert: ../organizations/ordererOrganizations/orderer.medtrack.com/orderers/orderer3.orderer.medtrack.com/tls/server.crt
+  BatchTimeout: 2s
+  BatchSize:
+    MaxMessageCount: 500
+    AbsoluteMaxBytes: 10 MB
+    PreferredMaxBytes: 2 MB
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    BlockValidation:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+  Capabilities:
+    <<: *OrdererCapabilities
+  Organizations:
+
+Channel: &ChannelDefaults
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+  Capabilities:
+    <<: *ChannelCapabilities
+
+Profiles:
+  MedTrackGenesis:
+    <<: *ChannelDefaults
+    Orderer:
+      OrdererType: etcdraft
+      EtcdRaft:
+        Consenters:
+          - Host: orderer1.orderer.medtrack.com
+            Port: 7050
+            ClientTLSCert: ../organizations/ordererOrganizations/orderer.medtrack.com/orderers/orderer1.orderer.medtrack.com/tls/server.crt
+            ServerTLSCert: ../organizations/ordererOrganizations/orderer.medtrack.com/orderers/orderer1.orderer.medtrack.com/tls/server.crt
+          - Host: orderer2.orderer.medtrack.com
+            Port: 8050
+            ClientTLSCert: ../organizations/ordererOrganizations/orderer.medtrack.com/orderers/orderer2.orderer.medtrack.com/tls/server.crt
+            ServerTLSCert: ../organizations/ordererOrganizations/orderer.medtrack.com/orderers/orderer2.orderer.medtrack.com/tls/server.crt
+          - Host: orderer3.orderer.medtrack.com
+            Port: 9050
+            ClientTLSCert: ../organizations/ordererOrganizations/orderer.medtrack.com/orderers/orderer3.orderer.medtrack.com/tls/server.crt
+            ServerTLSCert: ../organizations/ordererOrganizations/orderer.medtrack.com/orderers/orderer3.orderer.medtrack.com/tls/server.crt
+      Addresses:
+        - orderer1.orderer.medtrack.com:7050
+        - orderer2.orderer.medtrack.com:8050
+        - orderer3.orderer.medtrack.com:9050
+      Organizations:
+        - *OrdererOrg
+      Capabilities:
+        <<: *OrdererCapabilities
+      Policies:
+        Readers:
+          Type: ImplicitMeta
+          Rule: "ANY Readers"
+        Writers:
+          Type: ImplicitMeta
+          Rule: "ANY Writers"
+        Admins:
+          Type: ImplicitMeta
+          Rule: "MAJORITY Admins"
+        BlockValidation:
+          Type: ImplicitMeta
+          Rule: "ANY Writers"
+    Consortiums:
+      MedTrackConsortium:
+        Organizations:
+          - *Retailer
+          - *Manufacturer
+          - *Distributor
+          - *Wholesaler
+          - *Supplier
+          - *Consumer
+
+  MedTrackChannel:
+    <<: *ChannelDefaults     
+    Consortium: MedTrackConsortium
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *Retailer
+        - *Manufacturer
+        - *Distributor
+        - *Wholesaler
+        - *Supplier
+        - *Consumer

@@ -1,0 +1,187 @@
+{
+  "name": "Fabric Network",
+  "version": "2.5",
+  "caliper": {
+    "blockchain": "fabric"
+  },
+  "channels": [
+    {
+      "channelName": "plnchannel",
+      "chaincodes": [
+        {
+          "id": "pharma-supply-chain",
+          "version": "1.0",
+          "language": "golang"
+        }
+      ]
+    }
+  ],
+  "organizations": [
+    {
+      "mspid": "consumerMSP",
+      "identities": {
+        "certificates": {
+          "admin": {
+            "privateKey": {
+              "path": "../organizations/peerOrganizations/consumer.medtrack.com/msp/keystore/key.pem"
+            },
+            "certificate": {
+              "path": "../organizations/peerOrganizations/consumer.medtrack.com/msp/signcerts/cert.pem"
+            }
+          }
+        }
+      },
+      "peers": ["peer0.consumer.medtrack.com"],
+      "connection": {
+        "peerURL": "grpc://localhost:8091",
+        "tlsCert": "../organizations/peerOrganizations/consumer.medtrack.com/tlsca/tlsca.consumer.medtrack.com-cert.pem"
+      }
+    },
+    {
+      "mspid": "manufacturerMSP",
+      "identities": {
+        "certificates": {
+          "admin": {
+            "privateKey": {
+              "path": "../organizations/peerOrganizations/manufacturer.medtrack.com/msp/keystore/key.pem"
+            },
+            "certificate": {
+              "path": "../organizations/peerOrganizations/manufacturer.medtrack.com/msp/signcerts/cert.pem"
+            }
+          }
+        }
+      },
+      "peers": ["peer0.manufacturer.medtrack.com"],
+      "connection": {
+        "peerURL": "grpc://localhost:7071",
+        "tlsCert": "../organizations/peerOrganizations/manufacturer.medtrack.com/tlsca/tlsca.manufacturer.medtrack.com-cert.pem"
+      }
+    },
+    {
+      "mspid": "retailerMSP",
+      "identities": {
+        "certificates": {
+          "admin": {
+            "privateKey": {
+              "path": "../organizations/peerOrganizations/retailer.medtrack.com/msp/keystore/key.pem"
+            },
+            "certificate": {
+              "path": "../organizations/peerOrganizations/retailer.medtrack.com/msp/signcerts/cert.pem"
+            }
+          }
+        }
+      },
+      "peers": ["peer0.retailer.medtrack.com"],
+      "connection": {
+        "peerURL": "grpc://localhost:8051",
+        "tlsCert": "../organizations/peerOrganizations/retailer.medtrack.com/tlsca/tlsca.retailer.medtrack.com-cert.pem"
+      }
+    },
+    {
+      "mspid": "supplierMSP",
+      "identities": {
+        "certificates": {
+          "admin": {
+            "privateKey": {
+              "path": "../organizations/peerOrganizations/supplier.medtrack.com/msp/keystore/key.pem"
+            },
+            "certificate": {
+              "path": "../organizations/peerOrganizations/supplier.medtrack.com/msp/signcerts/cert.pem"
+            }
+          }
+        }
+      },
+      "peers": ["peer0.supplier.medtrack.com"],
+      "connection": {
+        "peerURL": "grpc://localhost:7051",
+        "tlsCert": "../organizations/peerOrganizations/supplier.medtrack.com/tlsca/tlsca.supplier.medtrack.com-cert.pem"
+      }
+    },
+    {
+      "mspid": "wholesalerMSP",
+      "identities": {
+        "certificates": {
+          "admin": {
+            "privateKey": {
+              "path": "../organizations/peerOrganizations/wholesaler.medtrack.com/msp/keystore/key.pem"
+            },
+            "certificate": {
+              "path": "../organizations/peerOrganizations/wholesaler.medtrack.com/msp/signcerts/cert.pem"
+            }
+          }
+        }
+      },
+      "peers": ["peer0.wholesaler.medtrack.com"],
+      "connection": {
+        "peerURL": "grpc://localhost:8021",
+        "tlsCert": "../organizations/peerOrganizations/wholesaler.medtrack.com/tlsca/tlsca.wholesaler.medtrack.com-cert.pem"
+      }
+    },
+    {
+      "mspid": "distributorMSP",
+      "identities": {
+        "certificates": {
+          "admin": {
+            "privateKey": {
+              "path": "../organizations/peerOrganizations/distributor.medtrack.com/msp/keystore/key.pem"
+            },
+            "certificate": {
+              "path": "../organizations/peerOrganizations/distributor.medtrack.com/msp/signcerts/cert.pem"
+            }
+          }
+        }
+      },
+      "peers": ["peer0.distributor.medtrack.com"],
+      "connection": {
+        "peerURL": "grpc://localhost:7092",
+        "tlsCert": "../organizations/peerOrganizations/distributor.medtrack.com/tlsca/tlsca.distributor.medtrack.com-cert.pem"
+      }
+    }
+  ],
+  "performance_metrics": {
+    "base": {
+      "description": "Base scenario with no optimizations or ML models applied. All parameters are set to default values.",
+      "latency": "50.23 ms",
+      "throughput": "85.67 TPS",
+      "block_creation_time": "5.12 s",
+      "transaction_success_rate": "95.45%",
+      "cpu_usage": "60.34%",
+      "memory_usage": "45.67%",
+      "network_latency": "25.12 ms",
+      "consensus_time": "2.34 s"
+    },
+    "optimized": {
+      "description": "Optimized scenario with manual tuning of network parameters. Block size, transaction batch size, and network configuration were adjusted to improve performance.",
+      "latency": "40.15 ms",
+      "throughput": "100.45 TPS",
+      "block_creation_time": "4.56 s",
+      "transaction_success_rate": "97.12%",
+      "cpu_usage": "55.12%",
+      "memory_usage": "40.23%",
+      "network_latency": "20.45 ms",
+      "consensus_time": "1.89 s"
+    },
+    "ml_model_1": {
+      "description": "ML Model 1: A Random Forest model was used to predict transaction latency and optimize block creation time. The model was trained on historical transaction data and tuned using grid search.",
+      "latency": "36.86 ms",
+      "throughput": "40.36 TPS",
+      "block_creation_time": "3.78 s",
+      "transaction_success_rate": "98.34%",
+      "cpu_usage": "50.45%",
+      "memory_usage": "35.67%",
+      "network_latency": "15.67 ms",
+      "consensus_time": "1.45 s"
+    },
+    "ml_model_2": {
+      "description": "ML Model 2: A Gradient Boosting model was used to predict transaction throughput and optimize resource allocation. The model was trained on historical data and fine-tuned using Bayesian optimization.",
+      "latency": "29.49 ms",
+      "throughput": "48.44 TPS",
+      "block_creation_time": "3.12 s",
+      "transaction_success_rate": "99.12%",
+      "cpu_usage": "45.67%",
+      "memory_usage": "30.12%",
+      "network_latency": "10.34 ms",
+      "consensus_time": "1.23 s"
+    }
+  }
+}

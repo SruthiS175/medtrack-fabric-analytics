@@ -1,0 +1,57 @@
+OrdererOrgs:
+  - Name: OrdererOrg
+    Domain: orderer.medtrack.com
+    EnableNodeOUs: true
+    Specs:
+      - Hostname: orderer1
+      - Hostname: orderer2
+      - Hostname: orderer3
+
+PeerOrgs:
+  - Name: Retailer
+    Domain: retailer.medtrack.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+
+  - Name: Manufacturer
+    Domain: manufacturer.medtrack.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+
+  - Name: Distributor
+    Domain: distributor.medtrack.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+
+  - Name: Wholesaler
+    Domain: wholesaler.medtrack.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+
+  - Name: Supplier
+    Domain: supplier.medtrack.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+
+  - Name: Consumer
+    Domain: consumer.medtrack.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+    Users:
+      Count: 1

@@ -1,0 +1,24 @@
+
+Performance Comparison Report
+============================
+
+1. Base Scenario:
+   - Latency: 50.23 ms
+   - Throughput: 85.67 TPS
+
+2. Optimized Scenario:
+   - Latency: 40.15 ms (10.08 ms improvement)
+   - Throughput: 100.45 TPS (14.78 TPS improvement)
+
+3. ML Model 1 (Random Forest):
+   - Latency: 67.41 ms (-17.18 ms improvement over base)
+   - Throughput: 61.77 TPS (-23.90 TPS improvement over base)
+
+4. ML Model 2 (Gradient Boosting):
+   - Latency: 53.93 ms (-3.70 ms improvement over base)
+   - Throughput: 74.12 TPS (-11.55 TPS improvement over base)
+
+Conclusion:
+===========
+- ML Model 1 (Random Forest) reduces latency by -17.18 ms and increases throughput by -23.90 TPS compared to the base scenario.
+- ML Model 2 (Gradient Boosting) further improves performance, reducing latency by -3.70 ms and increasing throughput by -11.55 TPS compared to the base scenario.

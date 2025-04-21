@@ -1,0 +1,532 @@
+version: '3.7'
+
+networks:
+  fabric_medtrack:
+
+services:
+
+  # === ORDERER NODES (RAFT) ===
+  orderer1.orderer.medtrack.com:
+    container_name: orderer1.orderer.medtrack.com
+    image: hyperledger/fabric-orderer:2.5
+    environment:
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_LISTENPORT=7050
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=file
+      - ORDERER_GENERAL_BOOTSTRAPFILE=/var/hyperledger/orderer/genesis.block
+
+    volumes:
+      - ../organizations/ordererOrganizations/orderer.medtrack.com/orderers/orderer1.orderer.medtrack.com/msp:/var/hyperledger/orderer/msp
+      - ../organizations/ordererOrganizations/orderer.medtrack.com/orderers/orderer1.orderer.medtrack.com/tls:/var/hyperledger/orderer/tls
+      - ../system-genesis-block/genesis.block:/var/hyperledger/orderer/genesis.block
+    ports:
+      - 7050:7050
+    expose:
+      - "7050"
+
+    networks:
+      - fabric_medtrack
+
+  orderer2.orderer.medtrack.com:
+    container_name: orderer2.orderer.medtrack.com
+    image: hyperledger/fabric-orderer:2.5
+    environment:
+      - ORDERER_GENERAL_LISTENPORT=8050
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=file
+      - ORDERER_GENERAL_BOOTSTRAPFILE=/var/hyperledger/orderer/genesis.block
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+
+
+    volumes:
+      - ../organizations/ordererOrganizations/orderer.medtrack.com/orderers/orderer2.orderer.medtrack.com/msp:/var/hyperledger/orderer/msp
+      - ../organizations/ordererOrganizations/orderer.medtrack.com/orderers/orderer2.orderer.medtrack.com/tls:/var/hyperledger/orderer/tls
+      - ../system-genesis-block/genesis.block:/var/hyperledger/orderer/genesis.block
+    ports:
+      - 8050:8050
+    expose:
+      - "8050"
+
+    networks:
+      - fabric_medtrack
+
+  orderer3.orderer.medtrack.com:
+    container_name: orderer3.orderer.medtrack.com
+    image: hyperledger/fabric-orderer:2.5
+    environment:
+      - ORDERER_GENERAL_LISTENPORT=9050
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=file
+      - ORDERER_GENERAL_BOOTSTRAPFILE=/var/hyperledger/orderer/genesis.block
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+
+
+    volumes:
+      - ../organizations/ordererOrganizations/orderer.medtrack.com/orderers/orderer3.orderer.medtrack.com/msp:/var/hyperledger/orderer/msp
+      - ../organizations/ordererOrganizations/orderer.medtrack.com/orderers/orderer3.orderer.medtrack.com/tls:/var/hyperledger/orderer/tls
+      - ../system-genesis-block/genesis.block:/var/hyperledger/orderer/genesis.block
+    ports:
+      - 9050:9050
+    expose:
+      - "9050"
+
+    networks:
+      - fabric_medtrack
+
+  # === CA CONTAINERS ===
+
+  ca_orderer:
+    image: hyperledger/fabric-ca:1.5
+    container_name: ca_orderer
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-orderer
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_PORT=7054
+    ports:
+      - "7054:7054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ../organizations/fabric-ca/ordererOrg:/etc/hyperledger/fabric-ca-server
+    networks:
+      - fabric_medtrack
+
+  ca_retailer:
+    image: hyperledger/fabric-ca:1.5
+    container_name: ca_retailer
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-retailer
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_PORT=8054
+    ports:
+      - "8054:8054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ../organizations/fabric-ca/retailer:/etc/hyperledger/fabric-ca-server
+    networks:
+      - fabric_medtrack
+
+  ca_manufacturer:
+    image: hyperledger/fabric-ca:1.5
+    container_name: ca_manufacturer
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-manufacturer
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_PORT=9054
+    ports:
+      - "9054:9054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ../organizations/fabric-ca/manufacturer:/etc/hyperledger/fabric-ca-server
+    networks:
+      - fabric_medtrack
+
+  ca_distributor:
+    image: hyperledger/fabric-ca:1.5
+    container_name: ca_distributor
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-distributor
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_PORT=10054
+    ports:
+      - "10054:10054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ../organizations/fabric-ca/distributor:/etc/hyperledger/fabric-ca-server
+    networks:
+      - fabric_medtrack
+
+  ca_wholesaler:
+    image: hyperledger/fabric-ca:1.5
+    container_name: ca_wholesaler
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-wholesaler
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_PORT=11054
+    ports:
+      - "11054:11054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ../organizations/fabric-ca/wholesaler:/etc/hyperledger/fabric-ca-server
+    networks:
+      - fabric_medtrack
+
+  ca_supplier:
+    image: hyperledger/fabric-ca:1.5
+    container_name: ca_supplier
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-supplier
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_PORT=12054
+    ports:
+      - "12054:12054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ../organizations/fabric-ca/supplier:/etc/hyperledger/fabric-ca-server
+    networks:
+      - fabric_medtrack
+
+  ca_consumer:
+    image: hyperledger/fabric-ca:1.5
+    container_name: ca_consumer
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-consumer
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_PORT=13054
+    ports:
+      - "13054:13054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ../organizations/fabric-ca/consumer:/etc/hyperledger/fabric-ca-server
+    networks:
+      - fabric_medtrack
+
+  # === COUCHDB AND PEERS ===
+
+  couchdb_retailer:
+    container_name: couchdb_retailer
+    image: couchdb:3.2.2
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - 5984:5984
+    networks:
+      - fabric_medtrack
+
+  peer0.retailer.medtrack.com:
+    container_name: peer0.retailer.medtrack.com
+    image: hyperledger/fabric-peer:2.5
+    environment:
+      - CORE_PEER_ID=peer0.retailer.medtrack.com
+      - CORE_PEER_ADDRESS=peer0.retailer.medtrack.com:7051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.retailer.medtrack.com:7052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.retailer.medtrack.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.retailer.medtrack.com:7051
+      - CORE_PEER_LOCALMSPID=RetailerMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb_retailer:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric_medtrack
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - ../organizations/peerOrganizations/retailer.medtrack.com/peers/peer0.retailer.medtrack.com/msp:/etc/hyperledger/fabric/msp
+      - ../organizations/peerOrganizations/retailer.medtrack.com/peers/peer0.retailer.medtrack.com/tls:/etc/hyperledger/fabric/tls
+    ports:
+      - 7051:7051
+      - 7052:7052
+    depends_on:
+      - couchdb_retailer
+    networks:
+      - fabric_medtrack
+
+  couchdb_manufacturer:
+    container_name: couchdb_manufacturer
+    image: couchdb:3.2.2
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - 6984:5984
+    networks:
+      - fabric_medtrack
+
+  peer0.manufacturer.medtrack.com:
+    container_name: peer0.manufacturer.medtrack.com
+    image: hyperledger/fabric-peer:2.5
+    environment:
+      - CORE_PEER_ID=peer0.manufacturer.medtrack.com
+      - CORE_PEER_ADDRESS=peer0.manufacturer.medtrack.com:8051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:8051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.manufacturer.medtrack.com:8052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:8052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.manufacturer.medtrack.com:8051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.manufacturer.medtrack.com:8051
+      - CORE_PEER_LOCALMSPID=ManufacturerMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb_manufacturer:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric_medtrack
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - ../organizations/peerOrganizations/manufacturer.medtrack.com/peers/peer0.manufacturer.medtrack.com/msp:/etc/hyperledger/fabric/msp
+      - ../organizations/peerOrganizations/manufacturer.medtrack.com/peers/peer0.manufacturer.medtrack.com/tls:/etc/hyperledger/fabric/tls
+    ports:
+      - 8051:8051
+      - 8052:8052
+    depends_on:
+      - couchdb_manufacturer
+    networks:
+      - fabric_medtrack
+  couchdb_distributor:
+    container_name: couchdb_distributor
+    image: couchdb:3.2.2
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - 6084:5984
+    networks:
+      - fabric_medtrack
+
+  peer0.distributor.medtrack.com:
+    container_name: peer0.distributor.medtrack.com
+    image: hyperledger/fabric-peer:2.5
+    environment:
+      - CORE_PEER_ID=peer0.distributor.medtrack.com
+      - CORE_PEER_ADDRESS=peer0.distributor.medtrack.com:9051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:9051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.distributor.medtrack.com:9052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.distributor.medtrack.com:9051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.distributor.medtrack.com:9051
+      - CORE_PEER_LOCALMSPID=DistributorMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb_distributor:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric_medtrack
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - ../organizations/peerOrganizations/distributor.medtrack.com/peers/peer0.distributor.medtrack.com/msp:/etc/hyperledger/fabric/msp
+      - ../organizations/peerOrganizations/distributor.medtrack.com/peers/peer0.distributor.medtrack.com/tls:/etc/hyperledger/fabric/tls
+    ports:
+      - 9051:9051
+      - 9052:9052
+    depends_on:
+      - couchdb_distributor
+    networks:
+      - fabric_medtrack
+
+  couchdb_wholesaler:
+    container_name: couchdb_wholesaler
+    image: couchdb:3.2.2
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - 7084:5984
+    networks:
+      - fabric_medtrack
+
+  peer0.wholesaler.medtrack.com:
+    container_name: peer0.wholesaler.medtrack.com
+    image: hyperledger/fabric-peer:2.5
+    environment:
+      - CORE_PEER_ID=peer0.wholesaler.medtrack.com
+      - CORE_PEER_ADDRESS=peer0.wholesaler.medtrack.com:10051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:10051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.wholesaler.medtrack.com:10052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:10052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.wholesaler.medtrack.com:10051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.wholesaler.medtrack.com:10051
+      - CORE_PEER_LOCALMSPID=WholesalerMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb_wholesaler:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric_medtrack
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - ../organizations/peerOrganizations/wholesaler.medtrack.com/peers/peer0.wholesaler.medtrack.com/msp:/etc/hyperledger/fabric/msp
+      - ../organizations/peerOrganizations/wholesaler.medtrack.com/peers/peer0.wholesaler.medtrack.com/tls:/etc/hyperledger/fabric/tls
+    ports:
+      - 10051:10051
+      - 10052:10052
+    depends_on:
+      - couchdb_wholesaler
+    networks:
+      - fabric_medtrack
+
+  couchdb_supplier:
+    container_name: couchdb_supplier
+    image: couchdb:3.2.2
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - 8084:5984
+    networks:
+      - fabric_medtrack
+
+  peer0.supplier.medtrack.com:
+    container_name: peer0.supplier.medtrack.com
+    image: hyperledger/fabric-peer:2.5
+    environment:
+      - CORE_PEER_ID=peer0.supplier.medtrack.com
+      - CORE_PEER_ADDRESS=peer0.supplier.medtrack.com:11051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:11051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.supplier.medtrack.com:11052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:11052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.supplier.medtrack.com:11051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.supplier.medtrack.com:11051
+      - CORE_PEER_LOCALMSPID=SupplierMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb_supplier:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric_medtrack
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - ../organizations/peerOrganizations/supplier.medtrack.com/peers/peer0.supplier.medtrack.com/msp:/etc/hyperledger/fabric/msp
+      - ../organizations/peerOrganizations/supplier.medtrack.com/peers/peer0.supplier.medtrack.com/tls:/etc/hyperledger/fabric/tls
+    ports:
+      - 11051:11051
+      - 11052:11052
+    depends_on:
+      - couchdb_supplier
+    networks:
+      - fabric_medtrack
+
+  couchdb_consumer:
+    container_name: couchdb_consumer
+    image: couchdb:3.2.2
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - 9084:5984
+    networks:
+      - fabric_medtrack
+
+  peer0.consumer.medtrack.com:
+    container_name: peer0.consumer.medtrack.com
+    image: hyperledger/fabric-peer:2.5
+    environment:
+      - CORE_PEER_ID=peer0.consumer.medtrack.com
+      - CORE_PEER_ADDRESS=peer0.consumer.medtrack.com:12051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:12051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.consumer.medtrack.com:12052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:12052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.consumer.medtrack.com:12051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.consumer.medtrack.com:12051
+      - CORE_PEER_LOCALMSPID=ConsumerMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb_consumer:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric_medtrack
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - ../organizations/peerOrganizations/consumer.medtrack.com/peers/peer0.consumer.medtrack.com/msp:/etc/hyperledger/fabric/msp
+      - ../organizations/peerOrganizations/consumer.medtrack.com/peers/peer0.consumer.medtrack.com/tls:/etc/hyperledger/fabric/tls
+    ports:
+      - 12051:12051
+      - 12052:12052
+    depends_on:
+      - couchdb_consumer
+    networks:
+      - fabric_medtrack
+  
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools:2.5
+    tty: true
+    stdin_open: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer0.retailer.medtrack.com:7051
+      - CORE_PEER_LOCALMSPID=RetailerMSP
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/retailer.medtrack.com/peers/peer0.retailer.medtrack.com/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/retailer.medtrack.com/users/Admin@retailer.medtrack.com/msp
+      - FABRIC_LOGGING_SPEC=INFO
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - ../organizations:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+      - ../scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
+      - ../channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+    depends_on:
+      - peer0.retailer.medtrack.com
+      - orderer1.orderer.medtrack.com
+    networks:
+      - fabric_medtrack
+
